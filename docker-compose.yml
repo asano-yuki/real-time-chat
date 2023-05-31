@@ -1,0 +1,16 @@
+version: '3'
+services:
+  front:
+    build: ./front
+    container_name: real-time-chat-front
+    volumes:
+      - ./front:/usr/src/app
+    ports:
+      - 3000:3000
+  server:
+    build: ./server
+    container_name: real-time-chat-server
+    volumes:
+      - ./server:/app
+    ports:
+      - 3001:3001

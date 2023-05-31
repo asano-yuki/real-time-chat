@@ -17,7 +17,7 @@ export const App = () => {
         disabled={showModal}
         onClick={handleClickBtn}
       >
-				チャット<br/>開始
+        チャット<br/>開始
       </button>
     </>
   )

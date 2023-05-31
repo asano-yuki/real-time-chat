@@ -1,0 +1,12 @@
+.root {
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  box-shadow: 2px 2px 5px #b5b5b5;
+  cursor: move;
+  max-width: 500px;
+  padding: 12px;
+  position: relative;
+  user-select: none;
+  z-index: 2;
+}

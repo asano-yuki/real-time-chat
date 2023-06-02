@@ -1,24 +1,31 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { ChatModal } from './components/ChatModal'
 import styles from './style.module.css'
 
 export const App = () => {
   const [showModal, setShowModal] = useState(false)
 
-  const handleClickBtn = () => {
-    setShowModal(true)
-  }
+  const handleLeaveRoom = useCallback(() => {
+    setShowModal(false)
+  }, [])
 
   return (
     <>
-      { showModal && <ChatModal />}
-      <button
-        className={styles.btn}
-        disabled={showModal}
-        onClick={handleClickBtn}
-      >
-        チャット<br/>開始
-      </button>
+      <section className={styles.root}>
+        <h1 className={styles.title}>チャットアプリ</h1>
+        <p className={styles.participants}>
+          参加者
+          <span className={styles.num}>2/5</span>
+        </p>
+        <button
+          className={styles.btn}
+          disabled={showModal}
+          onClick={() => setShowModal(true)}
+        >
+        入室
+        </button>
+      </section>
+      { showModal && <ChatModal handleLeaveRoom={handleLeaveRoom} />}
     </>
   )
 }

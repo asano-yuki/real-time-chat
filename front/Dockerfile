@@ -1,5 +1,4 @@
-FROM node:16.13.1
+FROM node:18.16.0
 RUN apt-get update -qq && apt-get install -y nodejs vim
 WORKDIR /usr/src/app
-COPY . /app
 CMD yarn install && yarn start

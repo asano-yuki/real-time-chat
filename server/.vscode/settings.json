@@ -1,0 +1,18 @@
+{
+  "editor.formatOnSave": true,
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "editor.tabSize": 2,
+  "editor.autoClosingBrackets": "always",
+  "python.linting.enabled": true,
+  "python.formatting.provider": "none",
+  "python.analysis.typeCheckingMode": "strict",
+  "python.analysis.extraPaths": [
+    "/usr/local/lib/python3.11/site-packages"
+  ],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true
+  },
+}

@@ -6,7 +6,8 @@ from sqlalchemy import pool
 from alembic import context
 
 from api.db import Base
-from models.task import Task, Done # type: ignore
+from models.user import User # type: ignore
+from models.chat import Chat # type: ignore
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

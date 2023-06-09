@@ -1,17 +1,23 @@
 from pydantic import BaseModel
 
+
 class Chat(BaseModel):
     id: int
+    room_id: int
+    room_name: str
     user_id: int
     user_name: str
     message: str
 
+
 class RoomCreate(BaseModel):
     user_name: str
+
 
 class UserJoin(BaseModel):
     id: int
     user_name: str
+
 
 class MessageCreate(BaseModel):
     id: int

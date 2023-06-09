@@ -6,13 +6,14 @@
   "editor.tabSize": 2,
   "editor.autoClosingBrackets": "always",
   "python.linting.enabled": true,
+  // "python.analysis.typeCheckingMode": "strict",
   "python.formatting.provider": "none",
-  "python.analysis.typeCheckingMode": "strict",
   "python.analysis.extraPaths": [
     "/usr/local/lib/python3.11/site-packages"
   ],
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true
   },
 }

@@ -6,8 +6,9 @@ from sqlalchemy import pool
 from alembic import context
 
 from api.db import Base
-from models.user import User # type: ignore
-from models.chat import Chat # type: ignore
+from models.user import User
+from models.room import Room
+from models.chat import Chat
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -71,7 +72,7 @@ def run_migrations_online() -> None:
     with connectable.connect() as connection:
         context.configure(
             url=url,
-            connection=connection, 
+            connection=connection,
             target_metadata=target_metadata,
         )
 

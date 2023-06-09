@@ -5,6 +5,10 @@ import styles from './style.module.css'
 export const App = () => {
   const [showModal, setShowModal] = useState(false)
 
+  const handleEnterRoom = useCallback(() => {
+    setShowModal(true)
+  }, [])
+
   const handleLeaveRoom = useCallback(() => {
     setShowModal(false)
   }, [])
@@ -20,12 +24,12 @@ export const App = () => {
         <button
           className={styles.btn}
           disabled={showModal}
-          onClick={() => setShowModal(true)}
+          onClick={handleEnterRoom}
         >
         入室
         </button>
       </section>
-      { showModal && <ChatModal handleLeaveRoom={handleLeaveRoom} />}
+      <ChatModal showModal={showModal} handleLeaveRoom={handleLeaveRoom} />
     </>
   )
 }

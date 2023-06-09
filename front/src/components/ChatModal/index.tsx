@@ -1,24 +1,39 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
+import axios from 'axios'
 import Draggable from 'react-draggable'
 import { Message } from '../Message'
 import type { ChangeEvent } from 'react'
+import type { ChatResponse } from '../../types/chat'
 import styles from './style.module.css'
 
 interface Props {
+  showModal: boolean
   handleLeaveRoom: () => void
 }
 
 export const ChatModal = ({
+  showModal,
   handleLeaveRoom
 }: Props) => {
   const nodeRef = useRef(null)
 
   const [message, setMessage] = useState('')
+  const [chatInfo, setChatInfo] = useState<ChatResponse[]>()
 
   const handleChangeMessage = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    e.stopPropagation()
     setMessage(e.target.value)
   }
+
+  useEffect(() => {
+    if (!showModal) return
+    const f = async () => {
+      const res = await axios.get<ChatResponse[]>('http://localhost:3001/chat/1')
+      setChatInfo(res.data)
+    }
+    f()
+  }, [showModal])
+
+  if (!showModal) return <></>
 
   return (
     <Draggable
@@ -35,24 +50,14 @@ export const ChatModal = ({
           <span className={styles.close} onClick={handleLeaveRoom}>✖️</span>
         </div>
         <ul className={styles.message_list}>
-          <li className={styles.left}>
-            <Message
-              name='太郎'
-              text='よろしくお願いします。'
-            />
-          </li>
-          <li className={styles.right}>
-            <Message
-              name='花子'
-              text='よろしくお願いします。'
-            />
-          </li>
-          <li className={styles.right}>
-            <Message
-              name='ヒロ'
-              text='よろしくお願いします。'
-            />
-          </li>
+          { chatInfo?.map(({ id, user_name, message }) => (
+            <li key={id} className={styles.left}>
+              <Message
+                name={user_name}
+                text={message}
+              />
+            </li>
+          )) }
         </ul>
         <div className={styles.footer}>
           <textarea

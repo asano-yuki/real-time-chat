@@ -10,10 +10,6 @@ class Chat(BaseModel):
     message: str
 
 
-class RoomCreate(BaseModel):
-    user_name: str
-
-
 class UserJoin(BaseModel):
     id: int
     user_name: str

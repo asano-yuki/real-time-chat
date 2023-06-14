@@ -17,10 +17,17 @@
     "web-vitals": "^3.3.2"
   },
   "devDependencies": {
+    "@types/react-scroll": "^1.8.7",
+    "@types/styled-components": "^5.1.26",
     "@typescript-eslint/eslint-plugin": "^5.59.8",
     "@typescript-eslint/parser": "^5.59.8",
     "eslint": "^8.41.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^2.8.8",
+    "react-scroll": "^1.8.9",
+    "styled-components": "5.3.10",
     "stylelint": "^15.6.2",
     "stylelint-config-standard": "^33.0.0"
   },

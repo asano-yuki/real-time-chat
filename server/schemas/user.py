@@ -7,3 +7,7 @@ class UserInfo(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UserCreate(BaseModel):
+    name: str

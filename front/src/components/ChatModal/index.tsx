@@ -1,77 +1,124 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useCallback, useEffect } from 'react'
 import axios from 'axios'
 import Draggable from 'react-draggable'
-import { Message } from '../Message'
-import type { ChangeEvent } from 'react'
+import { Login } from '../Login'
+import { EnteredRoom, MessageInfo } from '../EnteredRoom'
+import type { UserResponse } from '../../types/user'
 import type { ChatResponse } from '../../types/chat'
-import styles from './style.module.css'
+import Styled from 'styled-components'
 
 interface Props {
   showModal: boolean
   handleLeaveRoom: () => void
 }
 
-export const ChatModal = ({
-  showModal,
-  handleLeaveRoom
-}: Props) => {
+export const ChatModal = ({ showModal, handleLeaveRoom }: Props) => {
   const nodeRef = useRef(null)
 
-  const [message, setMessage] = useState('')
-  const [chatInfo, setChatInfo] = useState<ChatResponse[]>()
+  const [user, setUser] = useState<UserResponse>()
+  const [messageList, setMessageList] = useState<MessageInfo[]>([])
 
-  const handleChangeMessage = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setMessage(e.target.value)
-  }
+  const createUser = useCallback(async (userName: string) => {
+    const res = await axios.post<UserResponse>('http://localhost:3001/user/create', {
+      name: userName
+    })
+    setUser(res.data)
+  }, [])
+
+  const addMessage = useCallback(
+    (message: string) => {
+      if (!user) return
+      setMessageList((prev) => [
+        ...prev,
+        {
+          id: user.id,
+          userName: user.name,
+          message
+        }
+      ])
+    },
+    [user]
+  )
 
   useEffect(() => {
-    if (!showModal) return
-    const f = async () => {
+    if (!user) return
+    ;(async () => {
       const res = await axios.get<ChatResponse[]>('http://localhost:3001/chat/1')
-      setChatInfo(res.data)
-    }
-    f()
-  }, [showModal])
+      setMessageList(
+        res.data.map(({ id, user_name, message }) => ({
+          id,
+          userName: user_name,
+          message
+        }))
+      )
+    })()
+  }, [user])
 
   if (!showModal) return <></>
 
   return (
     <Draggable
       nodeRef={nodeRef}
-      axis="both"
-      handle=".header"
-      defaultPosition={{x: 200, y: 0}}
+      axis='both'
+      handle='.header'
+      defaultPosition={{ x: 200, y: 0 }}
       grid={[5, 5]}
       scale={1}
     >
-      <div ref={nodeRef} className={styles.root}>
-        <div className={`header ${styles.header}`}>
-          <h2 className={styles.title}>チャット</h2>
-          <span className={styles.close} onClick={handleLeaveRoom}>✖️</span>
-        </div>
-        <ul className={styles.message_list}>
-          { chatInfo?.map(({ id, user_name, message }) => (
-            <li key={id} className={styles.left}>
-              <Message
-                name={user_name}
-                text={message}
-              />
-            </li>
-          )) }
-        </ul>
-        <div className={styles.footer}>
-          <textarea
-            name='message'
-            className={styles.message}
-            maxLength={50}
-            value={message}
-            onChange={handleChangeMessage}
-          />
-          <button className={styles.btn} disabled={message.trim().length === 0}>
-            送信
-          </button>
-        </div>
-      </div>
+      <StyledContainer ref={nodeRef}>
+        <StyledHeader className='header'>
+          <StyledTitle>チャット</StyledTitle>
+          <StyledClose onClick={handleLeaveRoom}>✖️</StyledClose>
+        </StyledHeader>
+        {user ? (
+          <EnteredRoom user={user} messageList={messageList} addMessage={addMessage} />
+        ) : (
+          <Login createUser={createUser} />
+        )}
+      </StyledContainer>
     </Draggable>
   )
 }
+
+const StyledContainer = Styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  max-height: 600px;
+  background: #fff;
+  box-shadow: 2px 2px 7px #d0d0d0;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  user-select: none;
+  z-index: 2;
+`
+
+const StyledHeader = Styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  padding: 8px 0;
+  color: #5f5f5f;
+  border-bottom: 1px solid #dfdfdf;
+  cursor: move;
+`
+
+const StyledTitle = Styled.h2`
+  width: 100%;
+  padding-left: 28px;
+  font-size: 14px;
+  font-weight: normal;
+  text-align: center;
+`
+
+const StyledClose = Styled.span`
+  margin-right: 8px;
+  margin-left: auto;
+  font-size: 14px;
+
+  &:hover {
+    opacity: 0.5;
+    cursor: pointer;
+  }
+`

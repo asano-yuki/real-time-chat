@@ -1,21 +1,21 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, memo } from 'react'
 import type { ChangeEvent } from 'react'
 import styled from 'styled-components'
 
 interface Props {
-  createUser: (userName: string) => void
+  onLogin: (userName: string) => void
 }
 
-export const Login = ({ createUser }: Props) => {
+export const Login = memo(({ onLogin }: Props) => {
   const [userName, setUserName] = useState('')
 
   const handleChangeUsername = (e: ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value)
   }
 
-  const handleClickEnterRoomBtn = useCallback(() => {
-    createUser(userName)
-  }, [userName, createUser])
+  const handleClickEnterRoomBtn = () => {
+    onLogin(userName)
+  }
 
   return (
     <StyledContainer>
@@ -30,7 +30,9 @@ export const Login = ({ createUser }: Props) => {
       </StyledEnterBtn>
     </StyledContainer>
   )
-}
+})
+
+Login.displayName = 'Login'
 
 const StyledContainer = styled.div`
   display: flex;

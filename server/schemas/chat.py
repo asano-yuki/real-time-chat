@@ -13,9 +13,3 @@ class Chat(BaseModel):
 class UserJoin(BaseModel):
     id: int
     user_name: str
-
-
-class MessageCreate(BaseModel):
-    id: int
-    user_id: int
-    message: str

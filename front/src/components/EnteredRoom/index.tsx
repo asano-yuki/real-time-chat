@@ -1,31 +1,26 @@
-import React, { useCallback, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { animateScroll as scroll } from 'react-scroll'
 import { Message } from '../Message'
 import type { ChangeEvent } from 'react'
 import type { UserResponse } from '../../types/user'
+import type { MessageInfo } from '../../hooks/useWebSocket'
 import styled, { css } from 'styled-components'
-
-export interface MessageInfo {
-  id: number
-  userName: string
-  message: string
-}
 
 interface Props {
   user: UserResponse
-  messageList: MessageInfo[]
-  addMessage: (message: string) => void
+  messageInfos: MessageInfo[]
+  onSendMessage: (message: string) => void
 }
 
-export const EnteredRoom = ({ user, messageList, addMessage }: Props) => {
+export const EnteredRoom = ({ user, messageInfos, onSendMessage }: Props) => {
   const [message, setMessage] = useState('')
 
-  const handleChangeMessage = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChangeMessage = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value)
-  }, [])
+  }
 
   const handleClickSendBtn = () => {
-    addMessage(message.trim())
+    onSendMessage(message.trim())
     setMessage('')
   }
 
@@ -34,12 +29,12 @@ export const EnteredRoom = ({ user, messageList, addMessage }: Props) => {
       containerId: 'message-list',
       duration: 300
     })
-  }, [messageList])
+  }, [messageInfos])
 
   return (
     <>
       <StyledMessageList id='message-list'>
-        {messageList.map(({ id, userName, message }, index) => (
+        {messageInfos.map(({ id, userName, message = '' }, index) => (
           <StyledMessageItem key={index} direction={user.id === id ? 'right' : 'left'}>
             <Message name={user.id === id ? undefined : userName} text={message} />
           </StyledMessageItem>

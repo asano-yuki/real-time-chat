@@ -1,58 +1,50 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react'
-import axios from 'axios'
+import React, { useRef, useCallback, useEffect } from 'react'
 import Draggable from 'react-draggable'
+import { useUser } from '../../hooks/useUser'
+import { useWebSocket } from '../../hooks/useWebSocket'
 import { Login } from '../Login'
-import { EnteredRoom, MessageInfo } from '../EnteredRoom'
-import type { UserResponse } from '../../types/user'
-import type { ChatResponse } from '../../types/chat'
+import { EnteredRoom } from '../EnteredRoom'
 import Styled from 'styled-components'
 
 interface Props {
   showModal: boolean
-  handleLeaveRoom: () => void
+  onClose: () => void
 }
 
-export const ChatModal = ({ showModal, handleLeaveRoom }: Props) => {
+export const ChatModal = ({ showModal, onClose }: Props) => {
   const nodeRef = useRef(null)
 
-  const [user, setUser] = useState<UserResponse>()
-  const [messageList, setMessageList] = useState<MessageInfo[]>([])
+  const { user, createUser, deleteUser } = useUser()
+  const { messageInfos, isOpenWebSocket, openWebSocket, closeWebSocket, sendMessage, resetMessageList } = useWebSocket()
 
-  const createUser = useCallback(async (userName: string) => {
-    const res = await axios.post<UserResponse>('http://localhost:3001/user/create', {
-      name: userName
-    })
-    setUser(res.data)
-  }, [])
-
-  const addMessage = useCallback(
-    (message: string) => {
-      if (!user) return
-      setMessageList((prev) => [
-        ...prev,
-        {
-          id: user.id,
-          userName: user.name,
-          message
-        }
-      ])
+  const handleLogin = useCallback(
+    async (userName: string) => {
+      const { id } = await createUser(userName)
+      sendMessage({ action: 'join', id, userName })
     },
-    [user]
+    [createUser, sendMessage]
   )
 
-  useEffect(() => {
+  const handleSendMessage = (message: string) => {
     if (!user) return
-    ;(async () => {
-      const res = await axios.get<ChatResponse[]>('http://localhost:3001/chat/1')
-      setMessageList(
-        res.data.map(({ id, user_name, message }) => ({
-          id,
-          userName: user_name,
-          message
-        }))
-      )
-    })()
-  }, [user])
+    const data = { id: user.id, userName: user.name, message }
+    sendMessage({ action: 'sendMessage', ...data })
+  }
+
+  const handleClose = () => {
+    onClose()
+    if (!user) return
+    const data = { id: user.id, userName: user.name }
+    sendMessage({ action: 'exit', ...data })
+    closeWebSocket()
+    deleteUser()
+    resetMessageList()
+  }
+
+  // モーダル起動時にWebSocket開始
+  useEffect(() => {
+    if (showModal && !isOpenWebSocket) openWebSocket()
+  }, [showModal, isOpenWebSocket, openWebSocket])
 
   if (!showModal) return <></>
 
@@ -68,12 +60,12 @@ export const ChatModal = ({ showModal, handleLeaveRoom }: Props) => {
       <StyledContainer ref={nodeRef}>
         <StyledHeader className='header'>
           <StyledTitle>チャット</StyledTitle>
-          <StyledClose onClick={handleLeaveRoom}>✖️</StyledClose>
+          <StyledClose onClick={handleClose}>✖️</StyledClose>
         </StyledHeader>
         {user ? (
-          <EnteredRoom user={user} messageList={messageList} addMessage={addMessage} />
+          <EnteredRoom user={user} messageInfos={messageInfos} onSendMessage={handleSendMessage} />
         ) : (
-          <Login createUser={createUser} />
+          <Login onLogin={handleLogin} />
         )}
       </StyledContainer>
     </Draggable>
